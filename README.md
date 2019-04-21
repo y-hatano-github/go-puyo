@@ -16,12 +16,12 @@ Get the code.
 ```
 go get -d github.com/y-hatano-github/go-puyo
 ```
-### 2nd step
+### 3rd step
 Change directory to the source code directory.
 ```
 cd $GOPATH/src/github.com/y-hatano-github/go-puyo
 ```
-### 3rd step
+### 4th step
 Run the code.
 ```
 go run main.go
