@@ -1,6 +1,6 @@
 
 # Go-Puyo
-Go-Puyo is terminal based 'Puyo Puyo' similar game.
+Go-Puyo is terminal based 'Puyo Puyo' similar game written in Go language.
 
 ## What is puyo puyo?
 https://en.wikipedia.org/wiki/Puyo_Puyo
@@ -24,3 +24,6 @@ Run the code.
 ```
 go run main.go
 ```
+
+## Win/Mac/Linux binary
+https://github.com/y-hatano-github/go-puyo/releases/tag/v0.1.1
