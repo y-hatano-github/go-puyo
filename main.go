@@ -132,7 +132,7 @@ func updateConsole(s gameStatus, b *board) {
 
 		break
 	default:
-		drawString(1, 0, "[ESC]EXIT  [a]LEFT  [d]RIGHT  [s]ROTATE")
+		drawString(1, 0, "[ESC]EXIT  [a]LEFT  [d]RIGHT  [s]ROTATE RIGHT  [w]ROTATE LEFT")
 		str := ""
 		l := 0
 		for i, v := range b.m {
@@ -197,6 +197,14 @@ MAINLOOP:
 						b2i(k == "s")*b2i(p%4 == 2)*b2i(o.x2+8 > 0)*b2i(b.m[o.x2+8] == 0) +
 						b2i(k == "s")*b2i(p%4 == 3)*b2i(o.x2-1 > 0)*b2i(b.m[o.x2-1] == 0) +
 						b2i(k == "s")*b2i(p%4 == 0)*b2i(o.x2-8 > 0)*b2i(b.m[o.x2-8] == 0)
+
+					p -= b2i(k == "w")*b2i(p%4 == 1)*b2i(o.x2-1 > 0)*b2i(b.m[o.x2-1] == 0) +
+						b2i(k == "w")*b2i(p%4 == 2)*b2i(o.x2-8 > 0)*b2i(b.m[o.x2-8] == 0) +
+						b2i(k == "w")*b2i(p%4 == 3)*b2i(o.x2+1 > 0)*b2i(b.m[o.x2+1] == 0) +
+						b2i(k == "w")*b2i(p%4 == 0)*b2i(o.x2+8 > 0)*b2i(b.m[o.x2+8] == 0)
+					if p < 0 {
+						p = 4
+					}
 
 					x1 = x2 + b2i(p%4 == 1)*(-8) +
 						b2i(p%4 == 2) +
@@ -271,11 +279,12 @@ MAINLOOP:
 				break
 			}
 		}
-
-		t++
-		time.Sleep(time.Microsecond)
-		if t == 151 {
-			t = 0
+		if s != title && s != gameOver {
+			t++
+			time.Sleep(time.Microsecond * 700)
+			if t == 151 {
+				t = 0
+			}
 		}
 	}
 }
