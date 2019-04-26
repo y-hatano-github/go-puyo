@@ -24,3 +24,6 @@ Run the code.
 ```
 go run main.go
 ```
+
+## Win/Mac/Linux binary
+https://github.com/y-hatano-github/go-puyo/releases/tag/v0.1.1
