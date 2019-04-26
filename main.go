@@ -239,8 +239,8 @@ MAINLOOP:
 						x1 += 8
 						o.set(x1, x2, p)
 					} else {
-
 						s = falling
+						t = 0
 					}
 					b.set(o)
 					if x1 == 4 {
