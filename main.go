@@ -10,10 +10,12 @@ import (
 
 type gameStatus int
 
+const manoeuvreTickCnt = 120
+
 const (
 	title gameStatus = iota
 	newObject
-	moving
+	manoeuvre
 	falling
 	chainCheck
 	gameOver
@@ -24,6 +26,7 @@ type board struct {
 	cm       [104]int
 	score    int
 	chainCnt int
+	level    int
 }
 
 func (b *board) init() {
@@ -41,6 +44,11 @@ func (b *board) init() {
 	b.m[4] = 0
 	b.score = 0
 	b.chainCnt = 0
+	b.level = 1
+
+}
+func (b *board) tickCount() int {
+	return manoeuvreTickCnt - (b.level-1)%10*5
 }
 func (b *board) set(p *object) {
 	b.m[p.x1], b.m[p.x2] = p.c1, p.c2
@@ -63,7 +71,7 @@ type object struct {
 
 func (o *object) init() {
 	o.x1, o.x2 = 4, 12
-	o.c1, o.c2 = rand.Intn(6)+2, rand.Intn(6)+2
+	o.c1, o.c2 = rand.Intn(5)+2, rand.Intn(5)+2
 	o.p = 1
 }
 func (o *object) set(x1, y1, po int) {
@@ -76,12 +84,12 @@ func drawCell(x, y int, str string) {
 		z, _ := strconv.Atoi(string(v))
 		bg := ([]termbox.Attribute{termbox.ColorBlack,
 			termbox.ColorWhite,
-			termbox.ColorCyan,
+			termbox.ColorMagenta,
 			termbox.ColorGreen,
 			termbox.ColorRed,
 			termbox.ColorBlue,
 			termbox.ColorYellow,
-			termbox.ColorMagenta,
+			termbox.ColorCyan,
 		})[z]
 		cl, cr := '╺', '╸'
 		if z < 2 {
@@ -145,13 +153,13 @@ func updateConsole(s gameStatus, b *board) {
 		}
 		drawCell(1, 15, "111111111")
 		drawString(1, 17, "SCORE:"+strconv.Itoa(b.score))
+		drawString(1, 18, "LEVEL:"+strconv.Itoa(b.level))
 
 		if s == gameOver {
 			drawString(1, 19, "*** GAME OVER ***")
 			drawString(1, 20, "Hit [ENTER] to restart.")
 			drawString(1, 21, "Hit [ESC] to exit.")
 		}
-
 		break
 	}
 	termbox.Flush()
@@ -167,9 +175,10 @@ func execGame(key chan string) {
 	o.init()
 
 	t := 0
-MAINLOOP:
 
+MAINLOOP:
 	for {
+		startTime := time.Now().UnixNano() / int64(time.Millisecond)
 		updateConsole(s, b)
 
 		x1 := o.x1
@@ -184,12 +193,12 @@ MAINLOOP:
 			switch s {
 			case title:
 				if k == "enter" {
-					s = moving
+					s = manoeuvre
 				}
 				break
-			case moving:
+			case manoeuvre:
 				b.m[x1], b.m[x2] = 0, 0
-				if t < 150 {
+				if t < b.tickCount() {
 					x2 += b2i(k == "d")*b2i(b.m[o.x1+1] == 0)*b2i(b.m[o.x2+1] == 0) -
 						b2i(k == "a")*b2i(b.m[o.x1-1] == 0)*b2i(b.m[o.x2-1] == 0)
 
@@ -220,7 +229,7 @@ MAINLOOP:
 					b.init()
 					o.init()
 					t = 0
-					s = moving
+					s = manoeuvre
 				}
 				break
 			}
@@ -229,10 +238,10 @@ MAINLOOP:
 			case newObject:
 				o.init()
 				b.chainCnt = 0
-				s = moving
+				s = manoeuvre
 				break
-			case moving:
-				if t == 150 {
+			case manoeuvre:
+				if t == b.tickCount() {
 					b.m[x1], b.m[x2] = 0, 0
 					if b.m[x1+8] == 0 && b.m[x2+8] == 0 {
 						x2 += 8
@@ -274,6 +283,10 @@ MAINLOOP:
 						b.score += 10 * b.chainCnt
 						b.chainCnt++
 						s = falling
+
+						if (b.level * 10) <= b.score {
+							b.level++
+						}
 					}
 				}
 				break
@@ -281,8 +294,11 @@ MAINLOOP:
 		}
 		if s != title && s != gameOver {
 			t++
-			time.Sleep(time.Microsecond * 700)
-			if t == 151 {
+			wait := true
+			for wait {
+				wait = (time.Now().UnixNano()/int64(time.Millisecond))-startTime <= 1
+			}
+			if t > b.tickCount() {
 				t = 0
 			}
 		}
