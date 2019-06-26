@@ -26,13 +26,13 @@ go run main.go
 ```
 
 ## How to play
-Key bindings
-[enter] - start game
-[esc] - exit
-[a] - move left
-[d] - move right
-[w] - rotate left
-[s] - rotate left
+Key bindings<br>
+[enter] - start game<br>
+[esc] - exit<br>
+[a] - move left<br>
+[d] - move right<br>
+[w] - rotate left<br>
+[s] - rotate left<br>
 
 ## Win/Mac/Linux binary
 https://github.com/y-hatano-github/go-puyo/releases/
