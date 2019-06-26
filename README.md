@@ -32,7 +32,7 @@ Key bindings<br>
 [a] - move left<br>
 [d] - move right<br>
 [w] - rotate left<br>
-[s] - rotate left<br>
+[s] - rotate right<br>
 
 ## Win/Mac/Linux binary
 https://github.com/y-hatano-github/go-puyo/releases/
