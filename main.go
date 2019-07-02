@@ -140,25 +140,30 @@ func updateConsole(s gameStatus, b *board) {
 
 		break
 	default:
-		drawString(1, 0, "[ESC]EXIT  [a]LEFT  [d]RIGHT  [s]ROTATE RIGHT  [w]ROTATE LEFT")
+		drawString(20, 3, "[ESC]   EXIT")
+		drawString(20, 4, "[a]     LEFT")
+		drawString(20, 5, "[d]     RIGHT")
+		drawString(20, 6, "[s]     ROTATE RIGHT")
+		drawString(20, 7, "[w]     ROTATE LEFT")
+		drawString(20, 8, "[SPACE] DROP")
 		str := ""
 		l := 0
 		for i, v := range b.m {
 			if i%8 == 0 && i > 0 {
-				drawCell(1, 3+l, str+"1")
+				drawCell(1, 2+l, str+"1")
 				str = ""
 				l++
 			}
 			str += strconv.Itoa(v)
 		}
-		drawCell(1, 15, "111111111")
-		drawString(1, 17, "SCORE:"+strconv.Itoa(b.score))
-		drawString(1, 18, "LEVEL:"+strconv.Itoa(b.level))
+		drawCell(1, 14, "111111111")
+		drawString(1, 16, "SCORE:"+strconv.Itoa(b.score))
+		drawString(1, 17, "LEVEL:"+strconv.Itoa(b.level))
 
 		if s == gameOver {
-			drawString(1, 19, "*** GAME OVER ***")
-			drawString(1, 20, "Hit [ENTER] to restart.")
-			drawString(1, 21, "Hit [ESC] to exit.")
+			drawString(1, 18, "*** GAME OVER ***")
+			drawString(1, 19, "Hit [ENTER] to restart.")
+			drawString(1, 20, "Hit [ESC] to exit.")
 		}
 		break
 	}
@@ -197,6 +202,11 @@ MAINLOOP:
 				}
 				break
 			case manoeuvre:
+				if k == " " {
+					s = falling
+					t = 0
+					break
+				}
 				b.m[x1], b.m[x2] = 0, 0
 				if t < b.tickCount() {
 					x2 += b2i(k == "d")*b2i(b.m[o.x1+1] == 0)*b2i(b.m[o.x2+1] == 0) -
@@ -258,7 +268,7 @@ MAINLOOP:
 				}
 				break
 			case falling:
-				if t%50 == 0 {
+				if t%30 == 0 {
 					f := true
 					for i := 96; i > 16; i-- {
 						if b.m[i] == 0 && b.m[i-8] != 0 {
@@ -280,7 +290,7 @@ MAINLOOP:
 					if cnt > 3 {
 						b.m = b.cm
 						b.score += cnt
-						b.score += 10 * b.chainCnt
+						b.score += 10 * b.chainCnt * b.level
 						b.chainCnt++
 						s = falling
 

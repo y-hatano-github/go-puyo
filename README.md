@@ -33,6 +33,7 @@ Key bindings<br>
 [d] - move right<br>
 [w] - rotate left<br>
 [s] - rotate right<br>
+[space] - drop<br>
 
 ## Win/Mac/Linux binary
 https://github.com/y-hatano-github/go-puyo/releases/
