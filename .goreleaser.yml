@@ -1,5 +1,6 @@
 builds:
-  - binary: gopuyo
+  - main: main.go
+    binary: gopuyo
     goos:
       - windows
       - darwin
