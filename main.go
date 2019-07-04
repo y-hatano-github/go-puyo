@@ -10,15 +10,16 @@ import (
 
 type gameStatus int
 
-const manoeuvreTickCnt = 120
+const controlTickCnt = 120
 
 const (
 	title gameStatus = iota
 	newObject
-	manoeuvre
+	control
 	falling
 	chainCheck
 	gameOver
+	pause
 )
 
 type board struct {
@@ -48,7 +49,7 @@ func (b *board) init() {
 
 }
 func (b *board) tickCount() int {
-	return manoeuvreTickCnt - (b.level-1)%10*5
+	return controlTickCnt - (b.level-1)%10*5
 }
 func (b *board) set(p *object) {
 	b.m[p.x1], b.m[p.x2] = p.c1, p.c2
@@ -137,15 +138,14 @@ func updateConsole(s gameStatus, b *board) {
 		drawString(1, 8, "         Hit Enter to play game.")
 		drawString(1, 9, "         Hit ESC to exit.")
 		drawCell(1, 12, "23456234562345623456")
-
-		break
 	default:
 		drawString(20, 3, "[ESC]   EXIT")
-		drawString(20, 4, "[a]     LEFT")
-		drawString(20, 5, "[d]     RIGHT")
-		drawString(20, 6, "[s]     ROTATE RIGHT")
-		drawString(20, 7, "[w]     ROTATE LEFT")
-		drawString(20, 8, "[SPACE] DROP")
+		drawString(20, 4, "[SPACE] DROP")
+		drawString(20, 5, "[a]     LEFT")
+		drawString(20, 6, "[d]     RIGHT")
+		drawString(20, 7, "[s]     ROTATE RIGHT")
+		drawString(20, 8, "[w]     ROTATE LEFT")
+		drawString(20, 9, "[p]     PAUSE/RESUME")
 		str := ""
 		l := 0
 		for i, v := range b.m {
@@ -160,12 +160,15 @@ func updateConsole(s gameStatus, b *board) {
 		drawString(1, 16, "SCORE:"+strconv.Itoa(b.score))
 		drawString(1, 17, "LEVEL:"+strconv.Itoa(b.level))
 
+		if s == pause {
+			drawString(8, 8, "PAUSE")
+		}
+
 		if s == gameOver {
 			drawString(1, 18, "*** GAME OVER ***")
 			drawString(1, 19, "Hit [ENTER] to restart.")
 			drawString(1, 20, "Hit [ESC] to exit.")
 		}
-		break
 	}
 	termbox.Flush()
 }
@@ -198,10 +201,14 @@ MAINLOOP:
 			switch s {
 			case title:
 				if k == "enter" {
-					s = manoeuvre
+					s = control
 				}
-				break
-			case manoeuvre:
+
+			case control:
+				if k == "p" {
+					s = pause
+					break
+				}
 				if k == " " {
 					s = falling
 					t = 0
@@ -233,24 +240,27 @@ MAINLOOP:
 					b.set(o)
 				}
 
-				break
 			case gameOver:
 				if k == "enter" {
 					b.init()
 					o.init()
 					t = 0
-					s = manoeuvre
+					s = control
 				}
-				break
+
+			case pause:
+				if k == "p" {
+					s = control
+				}
 			}
 		default:
 			switch s {
 			case newObject:
 				o.init()
 				b.chainCnt = 0
-				s = manoeuvre
-				break
-			case manoeuvre:
+				s = control
+
+			case control:
 				if t == b.tickCount() {
 					b.m[x1], b.m[x2] = 0, 0
 					if b.m[x1+8] == 0 && b.m[x2+8] == 0 {
@@ -266,7 +276,7 @@ MAINLOOP:
 						s = gameOver
 					}
 				}
-				break
+
 			case falling:
 				if t%30 == 0 {
 					f := true
@@ -299,7 +309,6 @@ MAINLOOP:
 						}
 					}
 				}
-				break
 			}
 		}
 		if s != title && s != gameOver {
