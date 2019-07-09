@@ -35,11 +35,7 @@ func (b *board) init() {
 		if i%8 == 0 {
 			b.m[i] = 1
 		} else {
-			if i < 8 || i > 96 {
-				b.m[i] = 1
-			} else {
-				b.m[i] = 0
-			}
+			b.m[i] = b2i(i < 8 || i > 96)
 		}
 	}
 	b.m[4] = 0
@@ -147,18 +143,15 @@ func updateConsole(s gameStatus, b *board) {
 		drawString(20, 8, "[w]     ROTATE LEFT")
 		drawString(20, 9, "[p]     PAUSE/RESUME")
 		str := ""
-		l := 0
 		for i, v := range b.m {
-			if i%8 == 0 && i > 0 {
-				drawCell(1, 2+l, str+"1")
-				str = ""
-				l++
-			}
 			str += strconv.Itoa(v)
+			if len(str) == 8 {
+				drawCell(1, 2+(i/8), str+"1")
+				str = ""
+			}
 		}
-		drawCell(1, 14, "111111111")
-		drawString(1, 16, "SCORE:"+strconv.Itoa(b.score))
-		drawString(1, 17, "LEVEL:"+strconv.Itoa(b.level))
+		drawString(1, 16, "LEVEL:"+strconv.Itoa(b.level))
+		drawString(1, 17, "SCORE:"+strconv.Itoa(b.score))
 
 		if s == pause {
 			drawString(8, 8, "PAUSE")
