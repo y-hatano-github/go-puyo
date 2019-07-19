@@ -63,12 +63,17 @@ func chain(x, p int, b *board, cnt *int) {
 }
 
 type object struct {
-	x1, x2, ex1, ex2, c1, c2, p int
+	x1, x2, ex1, ex2, c1, c2, nc1, nc2, p int
 }
 
 func (o *object) init() {
 	o.x1, o.x2 = 4, 12
-	o.c1, o.c2 = rand.Intn(5)+2, rand.Intn(5)+2
+	if o.nc1 == 0 {
+		o.c1, o.c2 = rand.Intn(5)+2, rand.Intn(5)+2
+	} else {
+		o.c1, o.c2 = o.nc1, o.nc2
+	}
+	o.nc1, o.nc2 = rand.Intn(5)+2, rand.Intn(5)+2
 	o.p = 1
 }
 func (o *object) set(x1, y1, po int) {
@@ -110,6 +115,14 @@ func keyEvent(key chan string) {
 				key <- " "
 			case termbox.KeyEnter:
 				key <- "enter"
+			case termbox.KeyArrowUp:
+				key <- "w"
+			case termbox.KeyArrowDown:
+				key <- "s"
+			case termbox.KeyArrowLeft:
+				key <- "a"
+			case termbox.KeyArrowRight:
+				key <- "d"
 			default:
 				key <- string(ev.Ch)
 			}
@@ -124,7 +137,7 @@ func drawString(x, y int, str string) {
 	}
 }
 
-func updateConsole(s gameStatus, b *board) {
+func updateConsole(s gameStatus, b *board, o *object) {
 	termbox.Clear(termbox.ColorWhite, termbox.ColorDefault)
 
 	switch s {
@@ -135,13 +148,18 @@ func updateConsole(s gameStatus, b *board) {
 		drawString(1, 9, "         Hit ESC to exit.")
 		drawCell(1, 12, "23456234562345623456")
 	default:
-		drawString(20, 3, "[ESC]   EXIT")
-		drawString(20, 4, "[SPACE] DROP")
-		drawString(20, 5, "[a]     LEFT")
-		drawString(20, 6, "[d]     RIGHT")
-		drawString(20, 7, "[s]     ROTATE RIGHT")
-		drawString(20, 8, "[w]     ROTATE LEFT")
-		drawString(20, 9, "[p]     PAUSE/RESUME")
+		drawString(20, 5, "[ESC]           EXIT")
+		drawString(20, 6, "[SPACE]         DROP")
+		drawString(20, 7, "[a/ARROW LEFT]  LEFT")
+		drawString(20, 8, "[d/ARROW RIGHT] RIGHT")
+		drawString(20, 9, "[s/ARROW DOWN]  ROTATE RIGHT")
+		drawString(20, 10, "[w/ARROW UP]    ROTATE LEFT")
+		drawString(20, 11, "[p]             PAUSE/RESUME")
+
+		drawString(20, 2, "NEXT:")
+		drawCell(26, 2, strconv.Itoa(o.nc1))
+		drawCell(26, 3, strconv.Itoa(o.nc2))
+
 		str := ""
 		for i, v := range b.m {
 			str += strconv.Itoa(v)
@@ -180,7 +198,7 @@ func execGame(key chan string) {
 MAINLOOP:
 	for {
 		startTime := time.Now().UnixNano() / int64(time.Millisecond)
-		updateConsole(s, b)
+		updateConsole(s, b, o)
 
 		x1 := o.x1
 		x2 := o.x2
