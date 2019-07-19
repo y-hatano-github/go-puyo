@@ -30,10 +30,10 @@ Key bindings<br>
 [enter] - start game<br>
 [esc] - exit<br>
 [space] - drop<br>
-[a] - move left<br>
-[d] - move right<br>
-[w] - rotate left<br>
-[s] - rotate right<br>
+[a/arrow left] - move left<br>
+[d/arrow right] - move right<br>
+[w/arrow up] - rotate left<br>
+[s/arrow down] - rotate right<br>
 [p] - pause/resume<br>
 
 ## Win/Mac/Linux binary
