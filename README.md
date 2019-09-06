@@ -2,6 +2,8 @@
 # Go-Puyo
 Go-Puyo is terminal based 'Puyo Puyo' similar game written in Go language.
 
+![gopuyo](gopuyo.gif)
+
 ## What is puyo puyo?
 https://en.wikipedia.org/wiki/Puyo_Puyo
 
