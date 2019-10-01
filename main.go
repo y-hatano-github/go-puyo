@@ -220,7 +220,7 @@ MAINLOOP:
 					s = pause
 					break
 				}
-				if k == " " {
+				if k == " " && o.x1 != 4 && o.x2 != 12 {
 					s = falling
 					t = 0
 					break
