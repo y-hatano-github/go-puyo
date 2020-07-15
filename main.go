@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/nsf/termbox-go"
+	termbox "github.com/nsf/termbox-go"
 )
 
 type gameStatus int
@@ -28,6 +28,7 @@ type board struct {
 	score    int
 	chainCnt int
 	level    int
+	count    int
 }
 
 func (b *board) init() {
@@ -42,6 +43,7 @@ func (b *board) init() {
 	b.score = 0
 	b.chainCnt = 0
 	b.level = 1
+	b.count = 0
 
 }
 func (b *board) tickCount() int {
@@ -310,13 +312,14 @@ MAINLOOP:
 					chain(i, b.m[i], b, &cnt)
 					if cnt > 3 {
 						b.m = b.cm
-						b.score += cnt
-						b.score += 10 * b.chainCnt * b.level
+						b.count += cnt
+						b.score += cnt + 10*b.chainCnt*b.level
 						b.chainCnt++
 						s = falling
 
-						if (b.level * 10) <= b.score {
+						if (b.level * 10) <= b.count {
 							b.level++
+							b.count = 0
 						}
 					}
 				}
