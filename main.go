@@ -5,12 +5,13 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/nsf/termbox-go"
+	termbox "github.com/nsf/termbox-go"
+	"github.com/y-hatano-github/go-puyo/fps"
 )
 
 type gameStatus int
 
-const controlTickCnt = 120
+const controlTickCnt = 25
 
 const (
 	title gameStatus = iota
@@ -28,6 +29,7 @@ type board struct {
 	score    int
 	chainCnt int
 	level    int
+	count    int
 }
 
 func (b *board) init() {
@@ -42,6 +44,7 @@ func (b *board) init() {
 	b.score = 0
 	b.chainCnt = 0
 	b.level = 1
+	b.count = 0
 
 }
 func (b *board) tickCount() int {
@@ -137,7 +140,7 @@ func drawString(x, y int, str string) {
 	}
 }
 
-func updateConsole(s gameStatus, b *board, o *object) {
+func updateConsole(s gameStatus, b *board, o *object, f *fps.FPS) {
 	termbox.Clear(termbox.ColorWhite, termbox.ColorDefault)
 
 	switch s {
@@ -194,11 +197,11 @@ func execGame(key chan string) {
 	o.init()
 
 	t := 0
-
+	fps := fps.NewFPS(60)
 MAINLOOP:
 	for {
-		startTime := time.Now().UnixNano() / int64(time.Millisecond)
-		updateConsole(s, b, o)
+		fps.Update()
+		updateConsole(s, b, o, fps)
 
 		x1 := o.x1
 		x2 := o.x2
@@ -289,7 +292,7 @@ MAINLOOP:
 				}
 
 			case falling:
-				if t%30 == 0 {
+				if t%3 == 0 {
 					f := true
 					for i := 96; i > 16; i-- {
 						if b.m[i] == 0 && b.m[i-8] != 0 {
@@ -310,13 +313,14 @@ MAINLOOP:
 					chain(i, b.m[i], b, &cnt)
 					if cnt > 3 {
 						b.m = b.cm
-						b.score += cnt
-						b.score += 10 * b.chainCnt * b.level
+						b.count += cnt
+						b.score += cnt + 10*b.chainCnt*b.level
 						b.chainCnt++
 						s = falling
 
-						if (b.level * 10) <= b.score {
+						if (b.level * 10) <= b.count {
 							b.level++
+							b.count = 0
 						}
 					}
 				}
@@ -324,10 +328,7 @@ MAINLOOP:
 		}
 		if s != title && s != gameOver {
 			t++
-			wait := true
-			for wait {
-				wait = (time.Now().UnixNano()/int64(time.Millisecond))-startTime <= 1
-			}
+			fps.Wait()
 			if t > b.tickCount() {
 				t = 0
 			}
