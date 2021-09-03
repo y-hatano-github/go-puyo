@@ -95,7 +95,7 @@ func drawCell(x, y int, str string) {
 			termbox.ColorYellow,
 			termbox.ColorCyan,
 		})[z]
-		c := 'ー'
+		c := '－'
                 if z < 2 {
                       c  = '　'
                 }
