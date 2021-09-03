@@ -95,13 +95,11 @@ func drawCell(x, y int, str string) {
 			termbox.ColorYellow,
 			termbox.ColorCyan,
 		})[z]
-		cl, cr := '╺', '╸'
-		if z < 2 {
-			cl, cr = ' ', ' '
-		}
-
-		termbox.SetCell(x, y, cl, termbox.ColorBlack, bg)
-		termbox.SetCell(x+1, y, cr, termbox.ColorBlack, bg)
+		c := '－'
+                if z < 2 {
+                      c  = '　'
+                }
+		termbox.SetCell(x, y, c, termbox.ColorBlack, bg)
 		x += 2
 	}
 }
