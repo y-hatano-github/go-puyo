@@ -41,3 +41,5 @@ Key bindings<br>
 [s/arrow down] - rotate right<br>
 [p] - pause/resume<br>
 
+## Win/Mac/Linux binary
+https://github.com/y-hatano-github/go-puyo/releases
