@@ -5,10 +5,9 @@ before:
   hooks:
     - go mod tidy
 builds:
-  - main: .
+  - main: main.go
     binary: go-puyo
     ldflags:
-      - -s -w
       - -X main.Version={{.Version}}
       - -X main.Revision={{.ShortCommit}}
     env:
