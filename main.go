@@ -2,6 +2,7 @@ package main
 
 import (
 	"math/rand"
+	"runtime"
 	"strconv"
 	"time"
 
@@ -95,12 +96,24 @@ func drawCell(x, y int, str string) {
 			termbox.ColorYellow,
 			termbox.ColorCyan,
 		})[z]
-		c := '－'
-                if z < 2 {
-                      c  = '　'
-                }
-		termbox.SetCell(x, y, c, termbox.ColorBlack, bg)
+
+		if runtime.GOOS == "windows" {
+			cl, cr := rune(0x257a), rune(0x2578)
+			if z < 2 {
+				cl, cr = ' ', ' '
+			}
+			termbox.SetCell(x, y, cl, termbox.ColorBlack, bg)
+			termbox.SetCell(x+1, y, cr, termbox.ColorBlack, bg)
+		} else {
+			c := '－'
+			if z < 2 {
+				c = '　'
+			}
+			termbox.SetCell(x, y, c, termbox.ColorBlack, bg)
+
+		}
 		x += 2
+
 	}
 }
 
@@ -352,6 +365,7 @@ func main() {
 		panic(err)
 	}
 	defer termbox.Close()
+	termbox.SetOutputMode(termbox.Output256)
 
 	key := make(chan string)
 	go keyEvent(key)
