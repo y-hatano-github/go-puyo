@@ -311,7 +311,7 @@ MAINLOOP:
 							f = false
 						}
 					}
-					if f == true {
+					if f {
 						s = chainCheck
 					}
 				}
@@ -350,7 +350,7 @@ MAINLOOP:
 }
 
 func b2i(b bool) int {
-	if b == true {
+	if b {
 		return 1
 	}
 	return 0
