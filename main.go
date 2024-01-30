@@ -66,7 +66,7 @@ func chain(x, p int, b *board, cnt *int) {
 }
 
 type object struct {
-	x1, x2, ex1, ex2, c1, c2, nc1, nc2, p int
+	x1, x2, c1, c2, nc1, nc2, p int
 }
 
 func (o *object) init() {
