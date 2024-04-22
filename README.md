@@ -9,7 +9,7 @@ https://en.wikipedia.org/wiki/Puyo_Puyo
 
 ## How to get and run the code.
 ### build version
-go1.18 
+go1.22.2 
  
 ### 1st step
 Get the code.
