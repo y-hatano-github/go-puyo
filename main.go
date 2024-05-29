@@ -69,14 +69,14 @@ type object struct {
 	x1, x2, c1, c2, nc1, nc2, p int
 }
 
-func (o *object) init() {
+func (o *object) init(r rand.Rand) {
 	o.x1, o.x2 = 4, 12
 	if o.nc1 == 0 {
-		o.c1, o.c2 = rand.Intn(5)+2, rand.Intn(5)+2
+		o.c1, o.c2 = rand.Intn(5)+2, r.Intn(5)+2
 	} else {
 		o.c1, o.c2 = o.nc1, o.nc2
 	}
-	o.nc1, o.nc2 = rand.Intn(5)+2, rand.Intn(5)+2
+	o.nc1, o.nc2 = rand.Intn(5)+2, r.Intn(5)+2
 	o.p = 1
 }
 func (o *object) set(x1, y1, po int) {
@@ -199,12 +199,13 @@ func updateConsole(s gameStatus, b *board, o *object) {
 
 func execGame(key chan string) {
 	s := title
+	r := *rand.New(rand.NewSource(time.Now().UnixNano()))
 
 	b := &board{}
 	b.init()
 
 	o := &object{}
-	o.init()
+	o.init(r)
 
 	t := 0
 
@@ -267,7 +268,7 @@ MAINLOOP:
 			case gameOver:
 				if k == "enter" {
 					b.init()
-					o.init()
+					o.init(r)
 					t = 0
 					s = control
 				}
@@ -280,7 +281,7 @@ MAINLOOP:
 		default:
 			switch s {
 			case newObject:
-				o.init()
+				o.init(r)
 				b.chainCnt = 0
 				s = control
 
@@ -357,8 +358,6 @@ func b2i(b bool) int {
 }
 
 func main() {
-
-	rand.Seed(time.Now().UnixNano())
 
 	err := termbox.Init()
 	if err != nil {
